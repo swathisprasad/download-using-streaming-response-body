@@ -48,7 +48,7 @@ public class AsyncConfiguration implements AsyncConfigurer {
         return new WebMvcConfigurer() {
             @Override
             public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
-                configurer.setDefaultTimeout(3600000).setTaskExecutor(taskExecutor);
+                configurer.setDefaultTimeout(360000).setTaskExecutor(taskExecutor);
                 configurer.registerCallableInterceptors(callableProcessingInterceptor);
                 WebMvcConfigurer.super.configureAsyncSupport(configurer);
             }
