@@ -33,23 +33,25 @@ public class DownloadController {
 
             final String home = System.getProperty("user.home");
             final File directory = new File(home + File.separator + "Documents" + File.separator + "sample");
-
             final ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());
-            try {
-                for (final File file : directory.listFiles()) {
-                    final InputStream inputStream=new FileInputStream(file);
-                    final ZipEntry zipEntry = new ZipEntry(file.getName());
-                    zipOut.putNextEntry(zipEntry);
-                    byte[] bytes = new byte[1024];
-                    int length;
-                    while((length = inputStream.read(bytes)) >= 0) {
-                        zipOut.write(bytes, 0, length);
-                    }
-                    inputStream.close();
-                }
-                zipOut.close();
-            }catch (IOException e){
 
+            if(directory.exists() && directory.isDirectory()) {
+                try {
+                    for (final File file : directory.listFiles()) {
+                        final InputStream inputStream=new FileInputStream(file);
+                        final ZipEntry zipEntry=new ZipEntry(file.getName());
+                        zipOut.putNextEntry(zipEntry);
+                        byte[] bytes=new byte[1024];
+                        int length;
+                        while ((length=inputStream.read(bytes)) >= 0) {
+                            zipOut.write(bytes, 0, length);
+                        }
+                        inputStream.close();
+                    }
+                    zipOut.close();
+                } catch (final IOException e) {
+                    logger.error("Exception while reading and streaming data {} ", e);
+                }
             }
         };
         logger.info("steaming response {} ", stream);
