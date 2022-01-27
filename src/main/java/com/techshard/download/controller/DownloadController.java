@@ -48,7 +48,7 @@ public class DownloadController {
                         }
                         inputStream.close();
                     }
-                    zipOut.close();
+                    zipOut.finish();
                 } catch (final IOException e) {
                     logger.error("Exception while reading and streaming data {} ", e);
                 }
