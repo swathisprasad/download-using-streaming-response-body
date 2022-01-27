@@ -21,40 +21,38 @@ public class DownloadController {
 
     private final Logger logger = LoggerFactory.getLogger(DownloadController.class);
 
-    @GetMapping (value = "/download", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StreamingResponseBody> download(final HttpServletResponse response) {
-
-        response.setContentType("application/zip");
-        response.setHeader(
-                "Content-Disposition",
-                "attachment;filename=sample.zip");
+    @GetMapping (value = "/download", produces = "application/zip")
+    public ResponseEntity<StreamingResponseBody> download() {
 
         StreamingResponseBody stream = out -> {
 
             final String home = System.getProperty("user.home");
             final File directory = new File(home + File.separator + "Documents" + File.separator + "sample");
-            final ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());
+            final ZipOutputStream zipOut = new ZipOutputStream(out);
 
             if(directory.exists() && directory.isDirectory()) {
                 try {
                     for (final File file : directory.listFiles()) {
-                        final InputStream inputStream=new FileInputStream(file);
                         final ZipEntry zipEntry=new ZipEntry(file.getName());
                         zipOut.putNextEntry(zipEntry);
-                        byte[] bytes=new byte[1024];
-                        int length;
-                        while ((length=inputStream.read(bytes)) >= 0) {
-                            zipOut.write(bytes, 0, length);
+                        try (final InputStream inputStream = new FileInputStream(file)) {
+                            byte[] bytes = new byte[1024];
+                            int length;
+                            while ((length = inputStream.read(bytes)) >= 0) {
+                                zipOut.write(bytes, 0, length);
+                            }
                         }
-                        inputStream.close();
+                        zipOut.closeEntry();
                     }
-                    zipOut.close();
+                    zipOut.finish();
                 } catch (final IOException e) {
                     logger.error("Exception while reading and streaming data {} ", e);
                 }
             }
         };
         logger.info("steaming response {} ", stream);
-        return new ResponseEntity(stream, HttpStatus.OK);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment;filename=sample.zip")
+                .body(stream);
     }
 }
