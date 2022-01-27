@@ -22,18 +22,13 @@ public class DownloadController {
     private final Logger logger = LoggerFactory.getLogger(DownloadController.class);
 
     @GetMapping (value = "/download", produces = "application/zip")
-    public ResponseEntity<StreamingResponseBody> download(final HttpServletResponse response) {
-
-        response.setContentType("application/zip");
-        response.setHeader(
-                "Content-Disposition",
-                "attachment;filename=sample.zip");
+    public ResponseEntity<StreamingResponseBody> download() {
 
         StreamingResponseBody stream = out -> {
 
             final String home = System.getProperty("user.home");
             final File directory = new File(home + File.separator + "Documents" + File.separator + "sample");
-            final ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());
+            final ZipOutputStream zipOut = new ZipOutputStream(out);
 
             if(directory.exists() && directory.isDirectory()) {
                 try {
@@ -55,6 +50,8 @@ public class DownloadController {
             }
         };
         logger.info("steaming response {} ", stream);
-        return new ResponseEntity(stream, HttpStatus.OK);
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment;filename=sample.zip")
+                .body(stream);
     }
 }
