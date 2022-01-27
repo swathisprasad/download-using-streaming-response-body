@@ -21,7 +21,7 @@ public class DownloadController {
 
     private final Logger logger = LoggerFactory.getLogger(DownloadController.class);
 
-    @GetMapping (value = "/download", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping (value = "/download", produces = "application/zip")
     public ResponseEntity<StreamingResponseBody> download(final HttpServletResponse response) {
 
         response.setContentType("application/zip");
