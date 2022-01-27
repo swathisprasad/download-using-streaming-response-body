@@ -42,6 +42,7 @@ public class DownloadController {
                                 zipOut.write(bytes, 0, length);
                             }
                         }
+                        zipOut.closeEntry();
                     }
                     zipOut.finish();
                 } catch (final IOException e) {
