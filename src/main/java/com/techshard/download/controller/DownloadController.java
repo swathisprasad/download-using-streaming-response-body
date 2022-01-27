@@ -33,15 +33,15 @@ public class DownloadController {
             if(directory.exists() && directory.isDirectory()) {
                 try {
                     for (final File file : directory.listFiles()) {
-                        final InputStream inputStream=new FileInputStream(file);
                         final ZipEntry zipEntry=new ZipEntry(file.getName());
                         zipOut.putNextEntry(zipEntry);
-                        byte[] bytes=new byte[1024];
-                        int length;
-                        while ((length=inputStream.read(bytes)) >= 0) {
-                            zipOut.write(bytes, 0, length);
+                        try (final InputStream inputStream = new FileInputStream(file)) {
+                            byte[] bytes = new byte[1024];
+                            int length;
+                            while ((length = inputStream.read(bytes)) >= 0) {
+                                zipOut.write(bytes, 0, length);
+                            }
                         }
-                        inputStream.close();
                     }
                     zipOut.finish();
                 } catch (final IOException e) {
